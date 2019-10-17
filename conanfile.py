@@ -7,11 +7,13 @@ class renderrConan(ConanFile):
     url = "https://github.com/TimQuelch/renderer"
     exports_sources = ("*", "!build")
     generators = ("cmake_paths")
-    build_requires = ("fmt/5.3.0@bincrafters/stable")
+    build_requires = ("fmt/6.0.0",
+                      "eigen/3.3.7@conan/stable",
+                      "jsonformoderncpp/3.7.0@vthiery/stable")
 
     def build_requirements(self):
         if tools.get_env("CONAN_RUN_TESTS", True):
-            self.build_requires("Catch2/2.9.2@catchorg/stable")
+            self.build_requires("Catch2/2.10.0@catchorg/stable")
 
     def _configure_cmake(self):
         cmake = CMake(self)
