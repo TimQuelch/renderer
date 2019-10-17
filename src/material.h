@@ -1,9 +1,9 @@
+#pragma once
+
+#include <Eigen/Core>
+
 namespace renderer {
-    struct Colour {
-        double r;
-        double g;
-        double b;
-    };
+    using Colour = Eigen::Vector3f;
 
     struct Material {
         Colour emission;
