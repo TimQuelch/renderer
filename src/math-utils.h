@@ -1,8 +1,11 @@
 #pragma once
 
 #include <cmath>
+#include <random>
 
 namespace renderer {
+    using Rng = std::mt19937;
+
     template <typename T>
     [[nodiscard]] constexpr T degToRad(T deg) noexcept {
         return M_PI * deg / 180.0;

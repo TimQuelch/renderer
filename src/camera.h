@@ -4,7 +4,7 @@
 #include "vec.h"
 
 namespace renderer {
-    namespace {
+    namespace detail {
         auto getAxis(Vec const& eye, Vec const& lookAt, Vec const& up) {
             auto ax = Axis{};
             ax.z = (lookAt - eye).normalized();
@@ -24,14 +24,12 @@ namespace renderer {
         double aspectRatio_;
 
     public:
-        Camera(Vec const& eye, Vec const& lookAt, Vec const& up, double fov, int width, int height)
-            : eye_{eye}
-            , axis_{getAxis(eye, lookAt, up)}
-            , width_{width}
-            , height_{height}
-            , planeDist_{0.5 / tan(degToRad(fov) / 2)}
-            , aspectRatio_{static_cast<double>(width) / height} {}
+        Camera(Vec const& eye, Vec const& lookAt, Vec const& up, double fov, int width, int height);
 
         [[nodiscard]] auto rayThroughPixel(int x, int y) const -> Ray;
-   };
+
+        [[nodiscard]] auto width() const noexcept { return width_; }
+        [[nodiscard]] auto height() const noexcept { return height_; }
+        [[nodiscard]] auto aspectRatio() const noexcept { return aspectRatio_; }
+    };
 } // namespace renderer
