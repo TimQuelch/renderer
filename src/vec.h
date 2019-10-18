@@ -11,4 +11,9 @@ namespace renderer {
         Vec y;
         Vec z;
     };
+
+    struct Ray {
+        Vec origin;
+        Vec direction;
+    };
 }

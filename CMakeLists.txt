@@ -42,7 +42,7 @@ else()
 endif()
 
 # Add main lib target
-add_library(renderer src/renderer.cpp)
+add_library(renderer src/renderer.cpp src/camera.cpp)
 target_link_libraries(renderer PUBLIC fmt::fmt Eigen3::Eigen nlohmann_json::nlohmann_json)
 target_include_directories(renderer PUBLIC src/)
 target_compile_features(renderer PUBLIC cxx_std_17)
