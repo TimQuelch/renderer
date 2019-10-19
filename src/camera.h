@@ -4,16 +4,6 @@
 #include "vec.h"
 
 namespace renderer {
-    namespace detail {
-        auto getAxis(Vec const& eye, Vec const& lookAt, Vec const& up) {
-            auto ax = Axis{};
-            ax.z = (lookAt - eye).normalized();
-            ax.x = up.cross(ax.z).normalized();
-            ax.y = ax.z.cross(ax.x);
-            return ax;
-        }
-    } // namespace
-
     class Camera {
     private:
         Vec eye_;

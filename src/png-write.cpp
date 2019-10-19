@@ -6,18 +6,10 @@
 
 #include <png.h>
 
+#include "frame.h"
+
 namespace renderer {
-    void writePng(std::filesystem::path const& img,
-                  std::vector<std::vector<Colour>> const& pixels) {
-        auto const height = pixels.size();
-        auto const width = pixels[0].size();
-
-        for (auto const& v : pixels) {
-            if (v.size() != width) {
-                throw std::runtime_error{"Different number of pixels in each row"};
-            }
-        }
-
+    void writePng(std::filesystem::path const& img, Frame const& frame) {
         auto* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
         if (!static_cast<bool>(png)) {
@@ -38,8 +30,8 @@ namespace renderer {
 
         png_set_IHDR(png,
                      info,
-                     width,
-                     height,
+                     frame.width(),
+                     frame.height(),
                      8,
                      PNG_COLOR_TYPE_RGB,
                      PNG_INTERLACE_NONE,
@@ -48,14 +40,8 @@ namespace renderer {
 
         png_write_info(png, info);
 
-        auto rowArray = std::vector<std::uint8_t>(width * 3);
-        for (auto const& row : pixels) {
-            for (auto x = 0U; x < width; x++) {
-                for (auto c = 0U; c < 3; c++) {
-                    rowArray[x * 3 + c] = row[x][c];
-                }
-            }
-            png_write_row(png, rowArray.data());
+        for (int y = 0; y < frame.height(); y++) {
+            png_write_row(png, frame.asRowBuffer(y).data());
         }
 
         png_write_end(png, info);

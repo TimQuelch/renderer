@@ -2,9 +2,13 @@
 
 #include <filesystem>
 
+#include "math-utils.h"
+#include "frame.h"
+
 namespace renderer {
     class Scene;
     class Camera;
+    class Frame;
 
     struct RenderParams {
         std::filesystem::path outputFile = "out.png";
@@ -12,5 +16,6 @@ namespace renderer {
         int nSamples = {1};
     };
 
-    auto render(Scene const& scene, Camera const& camera, RenderParams const& params);
+    [[nodiscard]] auto
+    render(Scene const& scene, Camera const& camera, RenderParams const& params, Rng& rng) -> Frame;
 } // namespace renderer

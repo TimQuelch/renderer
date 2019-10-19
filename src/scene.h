@@ -17,6 +17,7 @@ namespace renderer {
             : background_{std::move(background)} {}
 
         [[nodiscard]] auto background() const noexcept { return background_; }
+
         [[nodiscard]] auto intersect(Ray const& ray) const noexcept -> std::optional<Intersection>;
     };
 } // namespace renderer
