@@ -6,7 +6,7 @@
 
 namespace renderer {
     namespace {
-        [[nodiscard]] auto generateRay(Intersection const& intersection, Rng& rng) -> Ray {
+        [[nodiscard, maybe_unused]] auto generateRay(Intersection const& intersection, [[maybe_unused]] Rng& rng) -> Ray {
 
             auto direction = Vec{};
             return {intersection.position, direction.normalized()};
@@ -15,7 +15,7 @@ namespace renderer {
         [[nodiscard]] auto castRay(Ray const& ray,
                                    Scene const& scene,
                                    RenderParams const& params,
-                                   Rng& rng,
+                                   [[maybe_unused]] Rng& rng,
                                    int depth = 0) -> Colour {
             if (depth > params.maxDepth) {
                 return scene.background();
