@@ -16,7 +16,7 @@ namespace renderer {
     public:
         Camera(Vec const& eye, Vec const& lookAt, Vec const& up, double fov, int width, int height);
 
-        [[nodiscard]] auto rayThroughPixel(int x, int y) const -> Ray;
+        [[nodiscard]] auto rayThroughPixel(int x, int y, Rng& rng) const -> Ray;
 
         [[nodiscard]] auto width() const noexcept { return width_; }
         [[nodiscard]] auto height() const noexcept { return height_; }

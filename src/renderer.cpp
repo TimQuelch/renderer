@@ -1,39 +1,69 @@
 #include "renderer.h"
 
+#include <random>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 #include "camera.h"
 #include "math-utils.h"
 #include "scene.h"
 
 namespace renderer {
     namespace {
-        [[nodiscard, maybe_unused]] auto generateRay(Intersection const& intersection,
-                                                     [[maybe_unused]] Rng& rng) -> Ray {
+        [[nodiscard]] auto generateRay(Intersection const& intersection, Rng& rng) -> Ray {
+            auto const cosTheta = std::uniform_real_distribution<float>{0, 1}(rng);
+            auto const sinTheta = std::sqrt(1 - cosTheta * cosTheta);
 
-            auto direction = Vec{};
-            return {intersection.position, direction.normalized()};
+            auto const phi = std::uniform_real_distribution<float>{0, 2 * M_PI}(rng);
+            auto const x = sinTheta * std::cos(phi);
+            auto const y = sinTheta * std::sin(phi);
+
+            auto const baseDir = Vec{x, y, cosTheta};
+
+            auto const transform = [normal = intersection.normal]() {
+                auto const normalAxis = Axis::fromZ(normal);
+                auto m = Eigen::Matrix3f{};
+                m.col(0) = normalAxis.x;
+                m.col(1) = normalAxis.y;
+                m.col(2) = normalAxis.z;
+                return m;
+            }();
+
+            auto const direction = transform * baseDir;
+
+            return {intersection.position, direction};
         }
 
         [[nodiscard]] auto castRay(Ray const& ray,
                                    Scene const& scene,
                                    RenderParams const& params,
-                                   [[maybe_unused]] Rng& rng,
+                                   Rng& rng,
                                    int depth = 0) -> Colour {
             if (depth > params.maxDepth) {
                 return scene.background();
             }
 
-            if (auto intersection = scene.intersect(ray)) {
-                // auto colour = Colour{};
-                // for (auto i = 0; i < params.nSamples; i++) {
-                //     // Generate new rays
-                //     // Cast rays
-                //     // Accumulate results
-                // }
+            auto const intersection = scene.intersect(ray);
 
-                return intersection->material.diffusion;
-            } else {
+            if (!intersection) {
                 return scene.background();
             }
+
+            auto incoming = Colour{0, 0, 0};
+            // auto const nSamples = std::max(1, params.nSamples / ipow(2, depth));
+            auto const nSamples = 1;
+            for (auto i = 0; i < nSamples; i++) {
+                auto const newRay = generateRay(*intersection, rng);
+                auto const pdf = 1 / (2 * M_PI);
+                incoming += newRay.direction.dot(intersection->normal) *
+                            castRay(newRay, scene, params, rng, depth + 1) / pdf;
+            }
+            incoming /= nSamples;
+
+            return intersection->material.emission +
+                   incoming.cwiseProduct(intersection->material.diffusion) / M_PI;
+            // return intersection->material.emission;
         }
     } // namespace
 
@@ -43,9 +73,13 @@ namespace renderer {
 
         for (auto y = 0; y < camera.height(); y++) {
             for (auto x = 0; x < camera.width(); x++) {
-                auto const ray = camera.rayThroughPixel(x, y);
-                auto const colour = castRay(ray, scene, params, rng);
-                frame.at(x, y) = colour;
+                frame.at(x, y) = {0, 0, 0};
+                for (int i = 0; i < params.nSamples; i++) {
+
+                    auto const ray = camera.rayThroughPixel(x, y, rng);
+                    auto const colour = castRay(ray, scene, params, rng);
+                    frame.at(x, y) += colour / params.nSamples;
+                }
             }
         }
 

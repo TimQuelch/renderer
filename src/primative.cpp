@@ -2,6 +2,8 @@
 
 #include <optional>
 
+#include "math-utils.h"
+
 namespace renderer {
     auto Sphere::intersect(Ray const& ray) const noexcept -> std::optional<Intersection> {
         auto const a = ray.direction.squaredNorm();
@@ -12,15 +14,15 @@ namespace renderer {
             return std::nullopt;
         }
 
-        auto const dPos = -b + std::sqrt(b * b - 4 * a * c);
-        auto const dNeg = -b - std::sqrt(b * b - 4 * a * c);
+        auto const dPos = (-b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
+        auto const dNeg = (-b - std::sqrt(b * b - 4 * a * c)) / (2 * a);
 
-        if (dPos < 0 && dNeg < 0) {
+        if (dPos < epsilon && dNeg < epsilon) {
             return std::nullopt;
         }
 
         auto const d = [dPos, dNeg]() {
-            if (dNeg < 0) {
+            if (dNeg < epsilon) {
                 return dPos;
             }
             return dNeg;

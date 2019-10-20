@@ -4,6 +4,6 @@
 
 namespace renderer {
     [[nodiscard]] auto toPixel(Colour const& colour) -> Pixel {
-        return (colour * std::numeric_limits<std::uint8_t>::max()).cast<std::uint8_t>();
+        return (colour.cwiseMin(1) * std::numeric_limits<std::uint8_t>::max()).cast<std::uint8_t>();
     }
-}
+} // namespace renderer
