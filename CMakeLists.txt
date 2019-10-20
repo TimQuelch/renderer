@@ -48,6 +48,7 @@ add_library(renderer
     src/camera.cpp
     src/png-write.cpp
     src/scene.cpp
+    src/primative.cpp
     src/frame.cpp
     src/colour.cpp)
 target_link_libraries(renderer

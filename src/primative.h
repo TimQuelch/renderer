@@ -16,11 +16,13 @@ namespace renderer {
 
         virtual ~Primative() = default;
 
+        [[nodiscard]] auto material() const noexcept { return material_; }
+
         [[nodiscard]] virtual auto intersect(Ray const& ray) const noexcept
             -> std::optional<Intersection> = 0;
     };
 
-    class Sphere : Primative {
+    class Sphere : public Primative {
     private:
         Vec center_;
         double radius_;

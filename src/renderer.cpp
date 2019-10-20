@@ -6,7 +6,8 @@
 
 namespace renderer {
     namespace {
-        [[nodiscard, maybe_unused]] auto generateRay(Intersection const& intersection, [[maybe_unused]] Rng& rng) -> Ray {
+        [[nodiscard, maybe_unused]] auto generateRay(Intersection const& intersection,
+                                                     [[maybe_unused]] Rng& rng) -> Ray {
 
             auto direction = Vec{};
             return {intersection.position, direction.normalized()};

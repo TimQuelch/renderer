@@ -18,6 +18,8 @@ namespace renderer {
 
         [[nodiscard]] auto background() const noexcept { return background_; }
 
+        void addSphere(Vec center, double radius, Material material);
+
         [[nodiscard]] auto intersect(Ray const& ray) const noexcept -> std::optional<Intersection>;
     };
 } // namespace renderer
