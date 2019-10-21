@@ -27,8 +27,10 @@ namespace renderer {
 
         auto unit = std::uniform_real_distribution<double>{0, 1};
 
+        // y component is negative so down-right is positive in pixel coords, but up-right is
+        // positive in space coords
         auto const xComp = axis_.x * aspectRatio_ * ((x + unit(rng)) / width_ - 0.5);
-        auto const yComp = axis_.y * ((y + unit(rng)) / height_ - 0.5);
+        auto const yComp = -axis_.y * ((y + unit(rng)) / height_ - 0.5);
         auto const zComp = axis_.z * planeDist_;
         auto const direction = xComp + yComp + zComp;
 
