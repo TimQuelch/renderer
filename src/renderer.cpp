@@ -20,6 +20,7 @@ namespace renderer {
             auto const y = sinTheta * std::sin(phi);
 
             auto const baseDir = Vec{x, y, cosTheta};
+            // fmt::print("Hemisphere vector\n{}\nNorm: {}\n", baseDir, baseDir.norm());
 
             auto const transform = [normal = intersection.normal]() {
                 auto const normalAxis = Axis::fromZ(normal);
@@ -31,6 +32,8 @@ namespace renderer {
             }();
 
             auto const direction = transform * baseDir;
+
+            // fmt::print("Transformed vector\n{}\nNorm: {}\n", direction, direction.norm());
 
             return {intersection.position, direction};
         }

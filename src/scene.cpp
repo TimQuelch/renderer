@@ -5,7 +5,17 @@
 
 namespace renderer {
     void Scene::addSphere(Vec center, double radius, Material material) {
-        primatives_.push_back(std::make_unique<Sphere>(center, radius, material));
+        primatives_.push_back(std::make_unique<Sphere>(std::move(center), radius, material));
+    }
+
+    void Scene::addTriangle(Vec v1, Vec v2, Vec v3, Material material) {
+        primatives_.push_back(
+            std::make_unique<Triangle>(std::move(v1), std::move(v2), std::move(v3), material));
+    }
+
+    void Scene::addRectangularPrism(Vec p1, Vec p2, Material material) {
+        primatives_.push_back(
+            std::make_unique<RectangularPrism>(std::move(p1), std::move(p2), material));
     }
 
     auto Scene::intersect(Ray const& ray) const noexcept -> std::optional<Intersection> {

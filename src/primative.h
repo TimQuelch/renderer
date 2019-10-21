@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <memory>
 #include <optional>
 
 #include "intersection.h"
@@ -35,6 +37,42 @@ namespace renderer {
 
         [[nodiscard]] auto center() const noexcept { return center_; }
         [[nodiscard]] auto radius() const noexcept { return radius_; }
+
+        [[nodiscard]] auto intersect(Ray const& ray) const noexcept
+            -> std::optional<Intersection> override;
+    };
+
+    class Triangle : public Primative {
+    private:
+        std::array<Vec, 3> vertices_;
+        Vec uVec_;
+        Vec vVec_;
+        Vec normal_;
+
+    public:
+        Triangle(std::array<Vec, 3> const& vertices, Material material)
+            : Primative{std::move(material)}
+            , vertices_{vertices}
+            , uVec_{vertices[1] - vertices[0]}
+            , vVec_{vertices[2] - vertices[0]}
+            , normal_{uVec_.cross(vVec_).normalized()} {}
+
+        Triangle(Vec v1, Vec v2, Vec v3, Material material)
+            : Triangle{std::array{std::move(v1), std::move(v2), std::move(v3)},
+                       std::move(material)} {}
+
+        [[nodiscard]] auto vertices() const noexcept { return vertices_; }
+
+        [[nodiscard]] auto intersect(Ray const& ray) const noexcept
+            -> std::optional<Intersection> override;
+    };
+
+    class RectangularPrism : public Primative {
+    private:
+        std::vector<std::unique_ptr<Triangle>> triangles_ = {};
+
+    public:
+        RectangularPrism(Vec p1, Vec p2, Material const& material);
 
         [[nodiscard]] auto intersect(Ray const& ray) const noexcept
             -> std::optional<Intersection> override;
