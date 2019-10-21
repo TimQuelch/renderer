@@ -12,16 +12,18 @@ namespace renderer {
         Vec z;
 
         static Axis fromZ(Vec const& z) noexcept {
-            auto const other = [z]() {
+            auto ax = Axis{};
+            ax.z = z.normalized();
+
+            auto const other = [&]() {
                 auto const xAxis = Vec{1, 0, 0};
-                auto const yAxis = Vec{1, 0, 0};
-                if (z.dot(xAxis) > 0.99f) {
+                auto const yAxis = Vec{0, 1, 0};
+                if (std::fabs(ax.z.dot(xAxis)) > 0.99f) {
                     return yAxis;
                 }
                 return xAxis;
             }();
 
-            auto ax = Axis{};
             ax.z = z.normalized();
             ax.x = other.cross(ax.z).normalized();
             ax.y = ax.z.cross(ax.x);
