@@ -1,9 +1,7 @@
 #include "renderer.h"
 
+#include <cmath>
 #include <random>
-
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 
 #include "camera.h"
 #include "math-utils.h"
@@ -20,7 +18,6 @@ namespace renderer {
             auto const y = sinTheta * std::sin(phi);
 
             auto const baseDir = Vec{x, y, cosTheta};
-            // fmt::print("Hemisphere vector\n{}\nNorm: {}\n", baseDir, baseDir.norm());
 
             auto const transform = [normal = intersection.normal]() {
                 auto const normalAxis = Axis::fromZ(normal);
@@ -32,8 +29,6 @@ namespace renderer {
             }();
 
             auto const direction = transform * baseDir;
-
-            // fmt::print("Transformed vector\n{}\nNorm: {}\n", direction, direction.norm());
 
             return {intersection.position, direction};
         }
@@ -64,9 +59,10 @@ namespace renderer {
             }
             incoming /= nSamples;
 
+            auto const brdf = 1 / M_PI;
+
             return intersection->material.emission +
-                   incoming.cwiseProduct(intersection->material.diffusion) / M_PI;
-            // return intersection->material.emission;
+            incoming.cwiseProduct(intersection->material.diffusion) * brdf;
         }
     } // namespace
 
