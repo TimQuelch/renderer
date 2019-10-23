@@ -7,7 +7,7 @@ class renderrConan(ConanFile):
     url = "https://github.com/TimQuelch/renderer"
     exports_sources = ("*", "!build")
     generators = ("cmake_paths")
-    build_requires = ("fmt/6.0.0",
+    build_requires = ("fmt/5.3.0@bincrafters/stable",
                       "libpng/1.6.37",
                       "eigen/3.3.7@conan/stable",
                       "jsonformoderncpp/3.7.0@vthiery/stable")
@@ -18,7 +18,7 @@ class renderrConan(ConanFile):
 
     def _configure_cmake(self):
         cmake = CMake(self)
-        cmake.definitions["AUDIO_ENABLE_TESTING"] = "ON" if tools.get_env("CONAN_RUN_TESTS", True) else "OFF"
+        cmake.definitions["RENDERER_ENABLE_TESTING"] = "ON" if tools.get_env("CONAN_RUN_TESTS", True) else "OFF"
         cmake.configure()
         return cmake
 
