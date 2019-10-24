@@ -6,7 +6,7 @@ namespace renderer {
     struct Material {
         Colour emission;
         Colour diffusion;
-        float reflectionIndex = {0.0};
-        float reflectionConeAngle = {0.0};
+        double reflectionIndex = {0.0};
+        double reflectionConeAngle = {0.0};
     };
 } // namespace renderer
