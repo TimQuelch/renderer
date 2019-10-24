@@ -10,12 +10,12 @@ namespace renderer {
 
     template <typename T>
     [[nodiscard]] constexpr T degToRad(T deg) noexcept {
-        return M_PI * deg / 180.0;
+        return static_cast<T>(M_PI) * deg / static_cast<T>(180.0);
     }
 
     template <typename T>
     [[nodiscard]] constexpr T radToDeg(T rad) noexcept {
-        return rad * 180.0 / M_PI;
+        return rad * static_cast<T>(180.0) / static_cast<T>(M_PI);
     }
 
     template <typename T>
