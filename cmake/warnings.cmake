@@ -9,6 +9,7 @@ set(warnings
     -Woverloaded-virtual
     -Wnull-dereference
     -Wdouble-promotion
+    -Wcast-align
     -Wzero-as-null-pointer-constant
     -Wformat=2)
 
