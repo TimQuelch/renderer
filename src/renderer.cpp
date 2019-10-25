@@ -121,6 +121,7 @@ namespace renderer {
         -> Frame {
         auto frame = Frame{camera.width(), camera.height()};
 
+#pragma omp parallel for schedule(dynamic, 1)
         for (auto y = 0; y < camera.height(); y++) {
             for (auto x = 0; x < camera.width(); x++) {
                 frame.at(x, y) = {0, 0, 0};

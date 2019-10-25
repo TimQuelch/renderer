@@ -14,6 +14,7 @@ find_package(fmt REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(PNG REQUIRED)
+find_package(OpenMP REQUIRED)
 
 # Set compile options
 include(${CMAKE_SOURCE_DIR}/cmake/warnings.cmake)
@@ -56,7 +57,8 @@ target_link_libraries(renderer
     fmt::fmt
     Eigen3::Eigen
     nlohmann_json::nlohmann_json
-    PNG::PNG)
+    PNG::PNG
+    OpenMP::OpenMP_CXX)
 target_include_directories(renderer PUBLIC src/)
 target_compile_features(renderer PUBLIC cxx_std_17)
 
