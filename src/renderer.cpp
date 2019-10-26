@@ -9,7 +9,7 @@
 
 namespace renderer {
     namespace {
-        [[nodiscard]] auto generateRayDiffuse(Intersection const& intersection, Rng& rng) -> Ray {
+        [[nodiscard]] auto generateRayDiffuse(Intersection const& intersection, Rng& rng) {
             auto const cosTheta = std::uniform_real_distribution<float>{0, 1}(rng);
             auto const sinTheta = std::sqrt(1 - cosTheta * cosTheta);
 
@@ -30,12 +30,11 @@ namespace renderer {
 
             auto const direction = transform * baseDir;
 
-            return {intersection.position, direction};
+            return std::pair{Ray{intersection.position, direction}, cosTheta};
         }
 
-        [[nodiscard]] auto generateRayReflective(Intersection const& intersection,
-                                                 Ray const& incoming,
-                                                 Rng& rng) -> Ray {
+        [[nodiscard]] auto
+        generateRayReflective(Intersection const& intersection, Ray const& incoming, Rng& rng) {
             auto const cosThetaMax =
                 1 + (std::cos(degToRad<float>(intersection.material.reflectionConeAngle)) - 1);
             auto const cosTheta = std::uniform_real_distribution<float>{1, cosThetaMax}(rng);
@@ -60,29 +59,7 @@ namespace renderer {
 
             auto const direction = transform * baseDir;
 
-            return {intersection.position, direction};
-        }
-
-        [[nodiscard]] auto
-        generateRay(Intersection const& intersection, Ray const& incoming, Rng& rng) {
-            auto const R = intersection.material.reflectionIndex;
-            auto const coneAngle = degToRad(intersection.material.reflectionConeAngle);
-            auto const r = std::uniform_real_distribution<double>{0, 1}(rng);
-
-            Ray ray = {};
-            double pdf = {};
-
-            if (r < R) {
-                ray = generateRayReflective(intersection, incoming, rng);
-                auto const cosTheta = static_cast<double>(ray.direction.dot(intersection.normal));
-                auto const sinTheta = std::sqrt(1 - cosTheta * cosTheta);
-                pdf = R * sinTheta / (2 * M_PI * (1.0 - std::cos(coneAngle)));
-            } else {
-                ray = generateRayDiffuse(intersection, rng);
-                pdf = (1 - R) / (2 * M_PI);
-            }
-
-            return std::pair{ray, pdf};
+            return std::pair{Ray{intersection.position, direction}, cosTheta};
         }
 
         [[nodiscard]] auto castRay(Ray const& ray,
@@ -104,16 +81,19 @@ namespace renderer {
             // auto const nSamples = std::max(1, params.nSamples / ipow(2, depth));
             auto const nSamples = 1;
             for (auto i = 0; i < nSamples; i++) {
-                auto const [newRay, pdf] = generateRay(*intersection, ray, rng);
-                incoming += newRay.direction.dot(intersection->normal) *
-                            castRay(newRay, scene, params, rng, depth + 1) / pdf;
+                auto const r = std::uniform_real_distribution<double>{0, 1}(rng);
+                if (r < intersection->material.reflectionIndex) {
+                    auto const [newRay, cosTheta] = generateRayReflective(*intersection, ray, rng);
+                    incoming += cosTheta * castRay(newRay, scene, params, rng, depth + 1);
+                } else {
+                    auto const [newRay, cosTheta] = generateRayDiffuse(*intersection, rng);
+                    incoming += cosTheta * castRay(newRay, scene, params, rng, depth + 1);
+                }
             }
             incoming /= nSamples;
 
-            auto const brdf = 1 / M_PI;
-
             return intersection->material.emission +
-                   incoming.cwiseProduct(intersection->material.diffusion) * brdf;
+                   incoming.cwiseProduct(intersection->material.diffusion);
         }
     } // namespace
 
