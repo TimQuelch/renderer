@@ -67,14 +67,28 @@ namespace renderer {
             -> std::optional<Intersection> override;
     };
 
-    class RectangularPrism : public Primative {
+    class TriangleMesh : public Primative {
     private:
         std::vector<std::unique_ptr<Triangle>> triangles_ = {};
 
+    protected:
+        void addTriangle(Vec const& v1, Vec const& v2, Vec const& v3);
+
     public:
-        RectangularPrism(Vec p1, Vec p2, Material const& material);
+        TriangleMesh(Material const& material)
+            : Primative{material} {}
 
         [[nodiscard]] auto intersect(Ray const& ray) const noexcept
             -> std::optional<Intersection> override;
+    };
+
+    class RectangularPlane : public TriangleMesh {
+    public:
+        RectangularPlane(Vec p1, Vec p2, Vec p3, Vec p4, Material const& material);
+    };
+
+    class RectangularPrism : public TriangleMesh {
+    public:
+        RectangularPrism(Vec p1, Vec p2, Material const& material);
     };
 } // namespace renderer

@@ -69,35 +69,7 @@ namespace renderer {
         return Intersection{position, backfacing ? -normal_ : normal_, material()};
     }
 
-    RectangularPrism::RectangularPrism(Vec p1, Vec p2, Material const& material)
-        : Primative{material} {
-        triangles_.reserve(12);
-
-        auto const addTri = [this, material](Vec const& v1, Vec const& v2, Vec const& v3) {
-            triangles_.push_back(std::make_unique<Triangle>(v1, v2, v3, material));
-        };
-
-        addTri({p1[0], p1[1], p1[2]}, {p2[0], p1[1], p1[2]}, {p1[0], p2[1], p1[2]});
-        addTri({p2[0], p2[1], p1[2]}, {p2[0], p1[1], p1[2]}, {p1[0], p2[1], p1[2]});
-
-        addTri({p1[0], p1[1], p1[2]}, {p2[0], p1[1], p1[2]}, {p1[0], p1[1], p2[2]});
-        addTri({p2[0], p1[1], p2[2]}, {p2[0], p1[1], p1[2]}, {p1[0], p1[1], p2[2]});
-
-        addTri({p1[0], p1[1], p1[2]}, {p1[0], p1[1], p2[2]}, {p1[0], p2[1], p1[2]});
-        addTri({p1[0], p2[1], p2[2]}, {p1[0], p1[1], p2[2]}, {p1[0], p2[1], p1[2]});
-
-        addTri({p2[0], p2[1], p2[2]}, {p1[0], p2[1], p2[2]}, {p2[0], p1[1], p2[2]});
-        addTri({p1[0], p1[1], p2[2]}, {p1[0], p2[1], p2[2]}, {p2[0], p1[1], p2[2]});
-
-        addTri({p2[0], p2[1], p2[2]}, {p1[0], p2[1], p2[2]}, {p2[0], p2[1], p1[2]});
-        addTri({p1[0], p2[1], p1[2]}, {p1[0], p2[1], p2[2]}, {p2[0], p2[1], p1[2]});
-
-        addTri({p2[0], p2[1], p2[2]}, {p2[0], p2[1], p1[2]}, {p2[0], p1[1], p2[2]});
-        addTri({p2[0], p1[1], p1[2]}, {p2[0], p2[1], p1[2]}, {p2[0], p1[1], p2[2]});
-    }
-
-    auto RectangularPrism::intersect(Ray const& ray) const noexcept -> std::optional<Intersection> {
-
+    auto TriangleMesh::intersect(Ray const& ray) const noexcept -> std::optional<Intersection> {
         auto closest = std::optional<Intersection>{};
         auto dClosest = std::numeric_limits<float>::max();
 
@@ -112,5 +84,38 @@ namespace renderer {
         }
 
         return closest;
+    }
+
+    void TriangleMesh::addTriangle(Vec const& v1, Vec const& v2, Vec const& v3) {
+        triangles_.push_back(std::make_unique<Triangle>(v1, v2, v3, material()));
+    }
+
+    RectangularPlane::RectangularPlane(Vec p1, Vec p2, Vec p3, Vec p4, Material const& material)
+        : TriangleMesh{material} {
+
+        addTriangle(p1, p2, p4);
+        addTriangle(p3, p2, p4);
+    }
+
+    RectangularPrism::RectangularPrism(Vec p1, Vec p2, Material const& material)
+        : TriangleMesh{material} {
+
+        addTriangle({p1[0], p1[1], p1[2]}, {p2[0], p1[1], p1[2]}, {p1[0], p2[1], p1[2]});
+        addTriangle({p2[0], p2[1], p1[2]}, {p2[0], p1[1], p1[2]}, {p1[0], p2[1], p1[2]});
+
+        addTriangle({p1[0], p1[1], p1[2]}, {p2[0], p1[1], p1[2]}, {p1[0], p1[1], p2[2]});
+        addTriangle({p2[0], p1[1], p2[2]}, {p2[0], p1[1], p1[2]}, {p1[0], p1[1], p2[2]});
+
+        addTriangle({p1[0], p1[1], p1[2]}, {p1[0], p1[1], p2[2]}, {p1[0], p2[1], p1[2]});
+        addTriangle({p1[0], p2[1], p2[2]}, {p1[0], p1[1], p2[2]}, {p1[0], p2[1], p1[2]});
+
+        addTriangle({p2[0], p2[1], p2[2]}, {p1[0], p2[1], p2[2]}, {p2[0], p1[1], p2[2]});
+        addTriangle({p1[0], p1[1], p2[2]}, {p1[0], p2[1], p2[2]}, {p2[0], p1[1], p2[2]});
+
+        addTriangle({p2[0], p2[1], p2[2]}, {p1[0], p2[1], p2[2]}, {p2[0], p2[1], p1[2]});
+        addTriangle({p1[0], p2[1], p1[2]}, {p1[0], p2[1], p2[2]}, {p2[0], p2[1], p1[2]});
+
+        addTriangle({p2[0], p2[1], p2[2]}, {p2[0], p2[1], p1[2]}, {p2[0], p1[1], p2[2]});
+        addTriangle({p2[0], p1[1], p1[2]}, {p2[0], p2[1], p1[2]}, {p2[0], p1[1], p2[2]});
     }
 } // namespace renderer

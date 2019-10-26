@@ -20,6 +20,7 @@ namespace renderer {
 
         void addSphere(Vec center, double radius, Material material);
         void addTriangle(Vec v1, Vec v2, Vec v3, Material material);
+        void addRectangularPlane(Vec p1, Vec p2, Vec p3, Vec p4, Material material);
         void addRectangularPrism(Vec p1, Vec p2, Material material);
 
         [[nodiscard]] auto intersect(Ray const& ray) const noexcept -> std::optional<Intersection>;
