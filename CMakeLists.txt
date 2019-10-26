@@ -27,6 +27,17 @@ add_compile_options(
     "$<$<CONFIG:Debug>:${debug_flags}>"
     "$<$<CONFIG:Release>:${optimisation_flags_release}>")
 
+# Enable link time optimisation (interprocedural optimisation) if available
+include(CheckIPOSupported)
+check_ipo_supported(RESULT LTO_SUPPORTED)
+if (LTO_SUPPORTED)
+    message(STATUS "LTO enabled for release modes")
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
+else()
+    message(STATUS "LTO not supported")
+endif()
+
 # Link TBB if using GCC for parallel STL
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     link_libraries(tbb)
