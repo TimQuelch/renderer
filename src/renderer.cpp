@@ -99,15 +99,15 @@ namespace renderer {
 
     auto render(Scene const& scene, Camera const& camera, RenderParams const& params, Rng& rng)
         -> Frame {
-        auto frame = Frame{camera.width(), camera.height()};
+        auto frame = Frame{params.width, params.height};
 
 #pragma omp parallel for schedule(dynamic, 1)
-        for (auto y = 0; y < camera.height(); y++) {
-            for (auto x = 0; x < camera.width(); x++) {
+        for (auto y = 0; y < params.height; y++) {
+            for (auto x = 0; x < params.width; x++) {
                 frame.at(x, y) = {0, 0, 0};
                 for (int i = 0; i < params.nSamples; i++) {
 
-                    auto const ray = camera.rayThroughPixel(x, y, rng);
+                    auto const ray = camera.rayThroughPixel(x, y, params.width, params.height, rng);
                     auto const colour = castRay(ray, scene, params, rng);
                     frame.at(x, y) += colour / params.nSamples;
                 }

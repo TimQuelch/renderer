@@ -11,9 +11,11 @@ namespace renderer {
     class Frame;
 
     struct RenderParams {
-        std::filesystem::path outputFile = "out.png";
+        int width = {1};
+        int height = {1};
         int maxDepth = {1};
         int nSamples = {1};
+        std::filesystem::path outputFile = "out.png";
     };
 
     [[nodiscard]] auto

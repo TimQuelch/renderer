@@ -9,7 +9,7 @@ using namespace renderer;
 
 int main() {
     auto rng = std::mt19937{42};
-    auto const camera = Camera{{0, 2, -8}, {0, 0.5, 0}, {0, 1, 0}, 40.0, 1920, 1080};
+    auto const camera = Camera{{0, 2, -8}, {0, 0.5, 0}, {0, 1, 0}, 40.0};
 
     auto const scene = []() {
         auto s = Scene{{0.5,  0.5, 0.5}};
@@ -55,7 +55,7 @@ int main() {
         return s;
     }();
 
-    auto const renderParams = RenderParams{"out.png", 5, 1024};
+    auto const renderParams = RenderParams{640, 480, 4, 32, "out.png"};
     auto const image = render(scene, camera, renderParams, rng);
 
     writePng(renderParams.outputFile, image);
