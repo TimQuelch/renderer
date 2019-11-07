@@ -8,7 +8,7 @@ class rendererConan(ConanFile):
     exports_sources = ("*", "!build")
     generators = ("cmake_paths")
     build_requires = ("fmt/5.3.0@bincrafters/stable",
-                      "libpng/1.6.37",
+                      "libpng/1.6.37@bincrafters/stable",
                       "eigen/3.3.7@conan/stable",
                       "jsonformoderncpp/3.7.0@vthiery/stable")
 
