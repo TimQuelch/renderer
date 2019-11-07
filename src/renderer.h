@@ -8,7 +8,6 @@
 namespace renderer {
     class Scene;
     class Camera;
-    class Frame;
 
     struct RenderParams {
         int width = {1};
