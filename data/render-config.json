@@ -1,0 +1,7 @@
+{
+    "width": 640,
+    "height": 480,
+    "bounce-depth": 4,
+    "number-samples": 32,
+    "output-file": "out.png"
+}

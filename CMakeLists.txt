@@ -77,6 +77,9 @@ target_compile_features(renderer PUBLIC cxx_std_17)
 add_executable(renderer-app src/main.cpp)
 target_link_libraries(renderer-app PUBLIC renderer)
 
+# Copy over data
+configure_file(data/render-config.json ./ COPYONLY)
+
 # Add tests
 if(${RENDERER_ENABLE_TESTING})
     enable_testing()

@@ -1,4 +1,7 @@
+#include <fstream>
 #include <random>
+
+#include <nlohmann/json.hpp>
 
 #include "camera.h"
 #include "png-write.h"
@@ -7,7 +10,22 @@
 
 using namespace renderer;
 
-int main() {
+[[nodiscard]] auto readRenderConfig(std::filesystem::path const& configFile) {
+    auto const config = [&]() {
+        auto stream = std::ifstream{configFile};
+        auto json = nlohmann::json{};
+        stream >> json;
+        return json;
+    }();
+
+    return RenderParams{config["width"],
+                        config["height"],
+                        config["bounce-depth"],
+                        config["number-samples"],
+                        config["output-file"]};
+}
+
+int main(int argc, char const* argv[]) {
     auto rng = std::mt19937{42};
     auto const camera = Camera{{0, 2, -8}, {0, 0.5, 0}, {0, 1, 0}, 40.0};
 
@@ -55,7 +73,14 @@ int main() {
         return s;
     }();
 
-    auto const renderParams = RenderParams{640, 480, 4, 32, "out.png"};
+    auto configFile = [=]() -> std::optional<std::filesystem::path> {
+        if (argc > 1) {
+            return {argv[1]};
+        }
+        return {};
+    }();
+
+    auto const renderParams = readRenderConfig(configFile.value_or("render-config.json"));
     auto const image = render(scene, camera, renderParams, rng);
 
     writePng(renderParams.outputFile, image);
