@@ -1,6 +1,6 @@
 from conans import ConanFile, tools, CMake
 
-class renderrConan(ConanFile):
+class rendererConan(ConanFile):
     name = "renderer"
     version = "0.1"
     license = "MIT"
