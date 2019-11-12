@@ -169,7 +169,7 @@ namespace renderer {
         for (auto y = 0; y < params.height; y++) {
             for (auto x = 0; x < params.width; x++) {
                 frame.at(x, y) = {0, 0, 0};
-                for (int i = 0; i < params.nSamples; i++) {
+                for (auto i = 0; i < params.nSamples; i++) {
 
                     auto const ray = camera.rayThroughPixel(x, y, params.width, params.height, rng);
                     auto const colour = castRay(ray, scene, params, rng);
