@@ -1,7 +1,12 @@
 #include "renderer.h"
 
+#include <atomic>
+#include <chrono>
 #include <cmath>
 #include <random>
+#include <thread>
+
+#include <fmt/format.h>
 
 #include "camera.h"
 #include "math-utils.h"
@@ -9,6 +14,63 @@
 
 namespace renderer {
     namespace {
+        class Progress {
+        private:
+            int total_;
+            std::atomic<int> current_ = 0;
+            std::atomic<bool> finished_ = false;
+            std::thread printThread;
+
+            template <typename TimePoint>
+            auto elapsed(TimePoint start) {
+                return std::chrono::duration<double>{std::chrono::steady_clock::now() - start};
+            }
+
+            template <typename TimePoint>
+            auto eta(TimePoint start) {
+                auto const currentElapsed = elapsed(start);
+                using dur = decltype(currentElapsed);
+                auto const rate = current() / currentElapsed.count();
+                return dur(static_cast<typename dur::rep>((total() - current()) / rate));
+            }
+
+        public:
+            Progress(int total)
+                : total_{total} {
+                printThread = std::thread{[&]() {
+                    auto const start = std::chrono::steady_clock::now();
+                    while (!finished_) {
+                        fmt::print("{:.1f}% ({}/{} px). Elapsed {:.2f}s. Remaining {:.2f}s\n",
+                                   percentage(),
+                                   current(),
+                                   Progress::total(),
+                                   elapsed(start).count(),
+                                   eta(start).count());
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    }
+                }};
+            }
+
+            Progress() = delete;
+            Progress(Progress const&) = delete;
+            Progress(Progress&&) = delete;
+            Progress& operator=(Progress const&) = delete;
+            Progress& operator=(Progress&&) = delete;
+
+            ~Progress() {
+                finished_ = true;
+                printThread.join();
+            }
+
+            void increment() { current_++; };
+
+            [[nodiscard]] int current() const noexcept { return current_; }
+            [[nodiscard]] int total() const noexcept { return total_; }
+            [[nodiscard]] double percentage() const noexcept {
+                return static_cast<double>(current()) / total() * 100.0;
+            }
+        };
+
         [[nodiscard]] auto generateRayDiffuse(Intersection const& intersection, Rng& rng) {
             auto const cosTheta = std::uniform_real_distribution<float>{0, 1}(rng);
             auto const sinTheta = std::sqrt(1 - cosTheta * cosTheta);
@@ -101,6 +163,8 @@ namespace renderer {
         -> Frame {
         auto frame = Frame{params.width, params.height};
 
+        auto progress = Progress{params.width * params.height};
+
 #pragma omp parallel for schedule(dynamic, 1)
         for (auto y = 0; y < params.height; y++) {
             for (auto x = 0; x < params.width; x++) {
@@ -111,6 +175,7 @@ namespace renderer {
                     auto const colour = castRay(ray, scene, params, rng);
                     frame.at(x, y) += colour / params.nSamples;
                 }
+                progress.increment();
             }
         }
 
