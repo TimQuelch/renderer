@@ -26,7 +26,7 @@ using namespace renderer;
 }
 
 int main(int argc, char const* argv[]) {
-    auto rng = std::mt19937{42};
+    auto rng = Rng{42};
     auto const camera = Camera{{0, 2, -8}, {0, 0.5, 0}, {0, 1, 0}, 40.0};
 
     auto const scene = []() {

@@ -4,7 +4,7 @@
 #include <random>
 
 namespace renderer {
-    using Rng = std::mt19937;
+    using Rng = std::minstd_rand;
 
     constexpr float epsilon = 0.001;
 
