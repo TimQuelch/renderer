@@ -18,14 +18,7 @@ find_package(OpenMP REQUIRED)
 
 # Set compile options
 include(${CMAKE_SOURCE_DIR}/cmake/warnings.cmake)
-set(optimisation_flags_release -O3 -march=native -mtune=native)
-set(optimisation_flags_debug -O0)
-set(debug_flags -g)
-add_compile_options(
-    ${warnings}
-    "$<$<CONFIG:Debug>:${optimisation_flags_debug}>"
-    "$<$<CONFIG:Debug>:${debug_flags}>"
-    "$<$<CONFIG:Release>:${optimisation_flags_release}>")
+add_compile_options(${warnings})
 
 # Enable link time optimisation (interprocedural optimisation) if available
 include(CheckIPOSupported)
