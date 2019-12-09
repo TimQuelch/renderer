@@ -1,0 +1,7 @@
+find_path(CTRE_INCLUDE_DIR
+    NAMES ctre.hpp)
+
+if (NOT CTRE_INCLUDE_DIR-NOTFOUND AND NOT TARGET CTRE::CTRE)
+    add_library(CTRE::CTRE INTERFACE IMPORTED)
+    target_include_directories(CTRE::CTRE INTERFACE ${CTRE_INCLUDE_DIR})
+endif()
