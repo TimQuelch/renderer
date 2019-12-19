@@ -10,7 +10,8 @@ class rendererConan(ConanFile):
     build_requires = ("fmt/5.3.0@bincrafters/stable",
                       "libpng/1.6.37@bincrafters/stable",
                       "eigen/3.3.7@conan/stable",
-                      "jsonformoderncpp/3.7.0@vthiery/stable")
+                      "jsonformoderncpp/3.7.0@vthiery/stable",
+                      "CTRE/v2.7@ctre/stable")
 
     def build_requirements(self):
         if tools.get_env("CONAN_RUN_TESTS", True):

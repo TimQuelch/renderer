@@ -9,12 +9,17 @@ option(RENDERER_RUN_CLANG_TIDY "Run clang tidy on C++ code" OFF)
 # Include conan files if they exist
 include(${CMAKE_BINARY_DIR}/conan_paths.cmake OPTIONAL)
 
+# Add custom modules directory
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/)
+message(${CMAKE_MODULE_PATH})
+
 # Find dependencies
 find_package(fmt REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(PNG REQUIRED)
 find_package(OpenMP REQUIRED)
+find_package(CTRE REQUIRED)
 
 # Set compile options
 include(${CMAKE_SOURCE_DIR}/cmake/warnings.cmake)
@@ -55,13 +60,15 @@ add_library(renderer
     src/scene.cpp
     src/primative.cpp
     src/frame.cpp
-    src/colour.cpp)
+    src/colour.cpp
+    src/obj.cpp)
 target_link_libraries(renderer
     PUBLIC
     fmt::fmt
     Eigen3::Eigen
     nlohmann_json::nlohmann_json
     PNG::PNG
+    CTRE::CTRE
     OpenMP::OpenMP_CXX)
 target_include_directories(renderer PUBLIC src/)
 target_compile_features(renderer PUBLIC cxx_std_17)
@@ -72,6 +79,7 @@ target_link_libraries(renderer-app PUBLIC renderer)
 
 # Copy over data
 configure_file(data/render-config.json ./ COPYONLY)
+configure_file(data/teapot.obj ./ COPYONLY)
 
 # Add tests
 if(${RENDERER_ENABLE_TESTING})

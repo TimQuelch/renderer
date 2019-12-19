@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "png-write.h"
 #include "renderer.h"
+#include "obj.h"
 #include "scene.h"
 
 using namespace renderer;
@@ -27,8 +28,8 @@ using namespace renderer;
 
 int main(int argc, char const* argv[]) {
     auto rng = Rng{42};
-    auto const camera = Camera{{0, 2, -8}, {0, 0.5, 0}, {0, 1, 0}, 40.0};
 
+    auto const camera = Camera{{0, 2, -8}, {0, 0.5, 0}, {0, 1, 0}, 40.0};
     auto const scene = []() {
         auto s = Scene{{0.5,  0.5, 0.5}};
 
@@ -72,6 +73,9 @@ int main(int argc, char const* argv[]) {
 
         return s;
     }();
+
+    // auto const camera = Camera{{100, 100, -200}, {0, 0, 0}, {0, 1, 0}, 40.0};
+    // auto scene = loadObj("teapot.obj", {0.5, 0.5, 0.5}, {{0, 0, 0}, {0.3, 0.3, 0.8}});
 
     auto configFile = [=]() -> std::optional<std::filesystem::path> {
         if (argc > 1) {
