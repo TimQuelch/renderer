@@ -19,7 +19,7 @@ find_package(Eigen3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(PNG REQUIRED)
 find_package(OpenMP REQUIRED)
-find_package(CTRE REQUIRED)
+find_package(ctre REQUIRED)
 
 # Set compile options
 include(${CMAKE_SOURCE_DIR}/cmake/warnings.cmake)
@@ -68,7 +68,7 @@ target_link_libraries(renderer
     Eigen3::Eigen
     nlohmann_json::nlohmann_json
     PNG::PNG
-    CTRE::CTRE
+    ctre::ctre
     OpenMP::OpenMP_CXX)
 target_include_directories(renderer PUBLIC src/)
 target_compile_features(renderer PUBLIC cxx_std_17)
